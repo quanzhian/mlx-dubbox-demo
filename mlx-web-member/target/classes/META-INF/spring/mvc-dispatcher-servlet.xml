@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans     
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://code.alibabatech.com/schema/dubbo
+        http://code.alibabatech.com/schema/dubbo/dubbo.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+    
+    <dubbo:application name="mlx-webs-member" />
+	<dubbo:registry protocol="zookeeper" address="192.168.1.157:2181" />
+	<dubbo:protocol name="dubbo" port="2080" />
+    
+    <!-- 自动扫描 -->
+    <context:component-scan base-package="com.mlx.web.member" />
+    <mvc:annotation-driven />
+    
+    <!--  
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix">
+            <value>/hrm/</value>
+        </property>
+        <property name="suffix">
+            <value>.jsp</value>
+        </property>
+    </bean>
+    -->
+	<!-- 输出对象转JSON支持 -->
+	<bean id="stringConverter" class="org.springframework.http.converter.StringHttpMessageConverter">
+		<property name="supportedMediaTypes">
+			<list>
+				<value>text/plain;charset=UTF-8</value>
+			</list>
+		</property>
+	</bean>
+	<bean id="jsonConverter" class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter"></bean>
+	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+		<property name="messageConverters">
+			<list>
+				<ref bean="stringConverter" />
+				<ref bean="jsonConverter" />
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 根据客户端的不同的请求决定不同的view进行响应, 如 /blog/1.json /blog/1.xml -->
+	<!-- 配置了，但访问时没有用 -->
+    <bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">   
+        <!-- 设置为true以忽略对Accept Header的支持 -->   
+        <property name="ignoreAcceptHeader" value="true" />   
+           
+        <!-- 在没有扩展名时即: "/blog/1" 时的默认展现形式 -->   
+        <property name="defaultContentType" value="text/html" />   
+   
+        <!-- 扩展名至mimeType的映射,即 /blog.json => application/json -->   
+        <property name="mediaTypes">   
+            <map>   
+                <entry key="html" value="text/html" />   
+                <entry key="pdf" value="application/pdf" />   
+                <entry key="xsl" value="application/vnd.ms-excel" />   
+                <entry key="xml" value="application/xml" />   
+                <entry key="json" value="application/json" />   
+            </map>   
+        </property>   
+       
+        <!-- 用于开启 /blog/123?format=json 的支持 -->
+        <!--  
+        <property name="favorParameter" value="false" />   
+        <property name="viewResolvers">   
+            <list>   
+                <bean class="org.springframework.web.servlet.view.BeanNameViewResolver" />   
+                <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">   
+                    <property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />   
+                    <property name="prefix" value="/pages" />   
+                    <property name="suffix" value=".jsp"></property>   
+                </bean>   
+            </list>   
+        </property>
+        -->   
+        <property name="defaultViews">   
+            <list>   
+                <!-- for application/json -->   
+                <bean class="org.springframework.web.servlet.view.json.MappingJacksonJsonView" />   
+                <!-- for application/xml -->   
+                <!--    
+                <bean class="org.springframework.web.servlet.view.xml.MarshallingView">    
+                    <property name="marshaller">    
+                        <bean class="org.springframework.oxm.xstream.XStreamMarshaller"/>    
+                    </property>    
+                </bean>    
+                -->   
+            </list>   
+        </property>   
+    </bean>   
+
+	
+	
+	<!-- 引用dubbo服务 -->
+	<!--  
+	<dubbo:reference id="UserService_api" interface="com.neterp.service.api.hrm.UserService" check="false" />
+	
+	<dubbo:reference id="PublicService_api" interface="com.neterp.service.api.pub.PublicService" check="false" />
+	-->
+	
+	<!--  
+	<bean id="userService" class="tocky.demo.web.hrm.UserServiceImpl">
+		<property name="userProvider" ref="api_iuser_provider" />
+	</bean>
+	-->
+	<import resource="./hrm/service-hrm.xml"/>
+
+ 
+</beans>

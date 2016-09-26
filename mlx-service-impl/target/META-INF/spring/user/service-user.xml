@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://code.alibabatech.com/schema/dubbo
+	http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+	
+	<!--
+	以rest方式暴露服务，registry="N/A"表示不向注册中心注册
+	<dubbo:service interface="com.neterp.service.api.hrm.UserService" ref="UserService" protocol="rest" registry="N/A" />
+	<dubbo:service interface="com.neterp.service.api.hrm.UserService" ref="UserService" protocol="rest" />
+	<bean id="UserService" class="com.neterp.service.impl.hrm.UserServiceImpl" />
+	-->
+	
+	<dubbo:service interface="com.mlx.service.UserService" ref="userService" />
+	<bean id="userService" class="com.mlx.service.impl.UserServiceImpl" />
+	
+
+</beans>

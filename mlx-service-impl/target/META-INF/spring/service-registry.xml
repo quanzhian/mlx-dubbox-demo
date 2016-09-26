@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://code.alibabatech.com/schema/dubbo
+	http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+	
+    <!-- 提供方应用信息，用于计算依赖关系 -->
+	<dubbo:application name="mlx_service_impl" />
+
+	<!-- 使用zookeeper广播注册中心暴露服务地址 -->
+	<dubbo:registry protocol="zookeeper" address="192.168.1.157:2181" />
+	
+<!-- 	<dubbo:monitor protocol="registry" /> -->
+	
+	<!-- 采用rest服务，端口2080，内嵌服务器tomcat，最大接收500个HTTP链接数 -->
+	<!--
+	下面2行要同时用才能运行  
+	<dubbo:protocol name="dubbo" serialization="kryo" />
+	<dubbo:protocol name="rest" port="2080" server="tomcat" accepts="500" />
+	
+	下面1行采用内嵌tomcat发布rest服务
+	<dubbo:protocol name="rest" serialization="kryo" port="2080" server="tomcat" accepts="500" />
+	
+	下面这行采用dubbo方式发布，注意，不支持内嵌的tomcat
+	<dubbo:protocol name="dubbo" serialization="kryo" port="2080" server="netty" accepts="500" />
+	-->
+	<dubbo:protocol name="rest" serialization="kryo" port="2080" server="tomcat" accepts="500" />
+	
+
+	<!-- 自动扫描服务，但无效，待整理 -->
+	<!-- 
+	<dubbo:annotation package="com.neterp.service.api" />
+	<context:component-scan base-package="com.neterp.service.api" /> 
+	-->
+	
+	<!-- 定义服务 -->
+	<!--  
+	<dubbo:service interface="com.neterp.service.api.hrm.UserService" ref="UserService" protocol="rest" />
+	<bean id="UserService" class="com.neterp.service.impl.hrm.UserServiceImpl" />
+	
+	<import resource="./hrm/service-hrm.xml"/>
+	-->
+	
+	
+	<import resource="./user/service-user.xml"/>
+
+</beans>

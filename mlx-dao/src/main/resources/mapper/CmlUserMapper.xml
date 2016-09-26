@@ -1,0 +1,998 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mlx.dao.UserDao" >
+  <resultMap id="BaseResultMap" type="com.mlx.entity.CmlUser" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="login_name" property="loginName" jdbcType="VARCHAR" />
+    <result column="user_no" property="userNo" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="password" property="password" jdbcType="VARCHAR" />
+    <result column="salt" property="salt" jdbcType="VARCHAR" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="register_date" property="registerDate" jdbcType="TIMESTAMP" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="user_type" property="userType" jdbcType="INTEGER" />
+    <result column="head_image_url" property="headImageUrl" jdbcType="VARCHAR" />
+    <result column="sex" property="sex" jdbcType="INTEGER" />
+    <result column="front_image_url" property="frontImageUrl" jdbcType="VARCHAR" />
+    <result column="residence" property="residence" jdbcType="VARCHAR" />
+    <result column="space_signature" property="spaceSignature" jdbcType="VARCHAR" />
+    <result column="level_name" property="levelName" jdbcType="VARCHAR" />
+    <result column="space_level" property="spaceLevel" jdbcType="VARCHAR" />
+    <result column="space_name" property="spaceName" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="score_num" property="scoreNum" jdbcType="INTEGER" />
+    <result column="card_type" property="cardType" jdbcType="INTEGER" />
+    <result column="card_no" property="cardNo" jdbcType="VARCHAR" />
+    <result column="card_img_path" property="cardImgPath" jdbcType="VARCHAR" />
+    <result column="submit_time" property="submitTime" jdbcType="TIMESTAMP" />
+    <result column="auth_time" property="authTime" jdbcType="DATE" />
+    <result column="auth_status" property="authStatus" jdbcType="INTEGER" />
+    <result column="birthday" property="birthday" jdbcType="DATE" />
+    <result column="constellation" property="constellation" jdbcType="INTEGER" />
+    <result column="blood_type" property="bloodType" jdbcType="INTEGER" />
+    <result column="emotion_state" property="emotionState" jdbcType="INTEGER" />
+    <result column="occupation" property="occupation" jdbcType="VARCHAR" />
+    <result column="company_name" property="companyName" jdbcType="VARCHAR" />
+    <result column="company_address" property="companyAddress" jdbcType="VARCHAR" />
+    <result column="company_detail_address" property="companyDetailAddress" jdbcType="VARCHAR" /> 
+    <result column="home_town" property="homeTown" jdbcType="VARCHAR" />   
+    <result column="valid_code" property="validCode" jdbcType="VARCHAR" />
+    <result column="meb_type" property="mebType" jdbcType="INTEGER" />
+    <result column="level_time" property="levelTime" jdbcType="TIMESTAMP" />
+    <result column="info_status" property="infoStatus" jdbcType="INTEGER" />
+    <result column="first_login" property="firstLogin" jdbcType="INTEGER" />
+    <result column="invit_user_no" property="invitUserNo" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, login_name,user_no, name, password, salt, email, status, register_date, mobile, 
+    user_type, head_image_url, sex, front_image_url, residence, space_signature, 
+    level_name,space_level, space_name, remark, score_num, card_type, card_no, 
+    card_img_path, submit_time, auth_time,auth_status, birthday, constellation, 
+    blood_type, emotion_state, occupation,company_name, company_address, 
+    company_detail_address, home_town,valid_code,meb_type, level_time,info_status,
+    first_login,invit_user_no
+  </sql>
+  <sql id="userinfo_Column_List" >
+    id, login_name,user_no, name, email, status, register_date, mobile, 
+    user_type, head_image_url, sex, front_image_url, residence, space_signature, 
+    level_name,space_level, space_name, remark, score_num, card_type, card_no, 
+    card_img_path, submit_time, auth_time,auth_status, birthday, constellation, 
+    blood_type, emotion_state, occupation,company_name, company_address, 
+    company_detail_address, home_town, meb_type, level_time,info_status,first_login,
+    invit_user_no
+  </sql>
+  
+  <select id="findByUserType" resultMap="BaseResultMap">
+  	select 
+  	<include refid="Base_Column_List"/>
+  	from cml_user
+  	where meb_type > 1
+  </select>
+  
+  <select id="findByCondition" resultMap="BaseResultMap">
+  	select id,user_no,email,mobile,login_name,name,register_date,meb_type from cml_user
+  	where 1=1
+  	<if test="startTime != null and endTime != null">
+  	 and register_date BETWEEN #{startTime} AND #{endTime}
+  	</if>
+  	<if test="sex != null">
+  	 and sex = #{sex}
+  	</if>
+  	<if test="loginName != null">
+  	 and login_name like "%"#{loginName}"%"
+  	</if>
+  	<if test="email != null">
+  	 and email = #{email}
+  	</if>
+  	<if test="mobilePhone != null">
+  	 and mobile = #{mobilePhone}
+  	</if>
+  	<if test="list != null">
+  	and meb_type in
+  	  <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+  	        #{item}
+  	  </foreach>
+  	</if>
+  </select>
+  
+  <!-- 插入用户： 1.由数据库生成id并赋值到user对象 2.输入用对象, 嵌套属性表达式#{team.id} -->
+  <insert id="insert" parameterType="com.mlx.entity.CmlUser" useGeneratedKeys="true" keyProperty="id">
+    insert into cml_user (
+      id, user_no,open_id, login_name,password, salt, name,email, mobile, status, 
+      register_date, user_type, sex,head_image_url, front_image_url, residence, 
+      space_signature, level_name, space_level,space_name, remark, score_num, 
+      card_type, card_no, card_img_path,submit_time, auth_time, auth_status, 
+      birthday, constellation, blood_type,emotion_state, occupation, company_name, 
+      company_address, company_detail_address, home_town,valid_code, meb_type, 
+      level_time,info_status,first_login,invit_user_no
+    )
+    values (
+      #{id,jdbcType=INTEGER}, #{userNo,jdbcType=VARCHAR},#{openId,jdbcType=VARCHAR}, #{loginName,jdbcType=VARCHAR}, 
+      #{password,jdbcType=VARCHAR}, #{salt,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
+      #{email,jdbcType=VARCHAR}, #{mobile,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, 
+      #{registerDate,jdbcType=TIMESTAMP}, #{userType,jdbcType=VARCHAR}, 
+      #{sex,jdbcType=INTEGER},#{headImageUrl,jdbcType=VARCHAR},
+      #{frontImageUrl,jdbcType=VARCHAR}, #{residence,jdbcType=VARCHAR},
+      #{spaceSignature,jdbcType=VARCHAR}, #{levelName,jdbcType=VARCHAR}, 
+      #{spaceLevel,jdbcType=VARCHAR},#{spaceName,jdbcType=VARCHAR}, 
+      #{remark,jdbcType=VARCHAR}, #{scoreNum,jdbcType=INTEGER},
+      #{cardType,jdbcType=INTEGER}, #{cardNo,jdbcType=VARCHAR}, 
+      #{cardImgPath,jdbcType=VARCHAR}, #{submitTime,jdbcType=TIMESTAMP}, 
+      #{authTime,jdbcType=DATE}, #{authStatus,jdbcType=INTEGER},#{birthday,jdbcType=DATE}, 
+      #{constellation,jdbcType=INTEGER}, #{bloodType,jdbcType=INTEGER}, 
+      #{emotionState,jdbcType=INTEGER}, #{occupation,jdbcType=VARCHAR}, 
+      #{companyName,jdbcType=VARCHAR},#{companyAddress,jdbcType=VARCHAR}, 
+      #{companyDetailAddress,jdbcType=VARCHAR}, #{homeTown,jdbcType=VARCHAR},
+      #{validCode,jdbcType=VARCHAR}, #{mebType,jdbcType=INTEGER}, 
+      #{levelTime,jdbcType=TIMESTAMP}, #{infoStatus,jdbcType=INTEGER}, 
+      #{firstLogin,jdbcType=INTEGER},#{invitUserNo,jdbcType=VARCHAR}
+   )
+  </insert>
+  
+  <insert id="insertSelective" parameterType="com.mlx.entity.CmlUser" useGeneratedKeys="true" keyProperty="id">
+    insert into cml_user
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="userNo != null" >
+        user_no,
+      </if>     
+      <if test="loginName != null" >
+        login_name,
+      </if>
+      <if test="password != null" >
+        password,
+      </if>
+      <if test="salt != null" >
+        salt,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="email != null" >
+        email,
+      </if>
+      <if test="mobile != null" >
+        mobile,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="registerDate != null" >
+        register_date,
+      </if>
+      <if test="userType != null" >
+        user_type,
+      </if>
+      <if test="sex != null" >
+        sex,
+      </if>
+      <if test="headImageUrl != null" >
+        head_image_url,
+      </if>
+      <if test="frontImageUrl != null" >
+        front_image_url,
+      </if>
+      <if test="residence != null" >
+        residence,
+      </if>
+      <if test="spaceSignature != null" >
+        space_signature,
+      </if>
+      <if test="levelName != null" >
+        level_name,
+      </if>
+      <if test="spaceLevel != null" >
+        space_level,
+      </if>
+      <if test="spaceName != null" >
+        space_name,
+      </if>
+      <if test="scoreNum != null" >
+        score_num,
+      </if>
+      <if test="cardType != null" >
+        card_type,
+      </if>
+      <if test="cardNo != null" >
+        card_no,
+      </if>
+      <if test="cardImgPath != null" >
+        card_img_path,
+      </if>
+      <if test="submitTime != null" >
+        submit_time,
+      </if>
+      <if test="authTime != null" >
+        auth_time,
+      </if>
+      <if test="authStatus != null" >
+        auth_status,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="birthday != null" >
+        birthday,
+      </if>
+      <if test="constellation != null" >
+        constellation,
+      </if>
+      <if test="bloodType != null" >
+        blood_type,
+      </if>
+      <if test="emotionState != null" >
+        emotion_state,
+      </if>
+      <if test="occupation != null" >
+        occupation,
+      </if>
+      <if test="companyName != null" >
+        company_name,
+      </if>
+      <if test="companyAddress != null" >
+        company_address,
+      </if>
+      <if test="companyDetailAddress != null" >
+        company_detail_address,
+      </if>
+      <if test="homeTown != null" >
+        home_town,
+      </if>
+      <if test="validCode != null" >
+        valid_code,
+      </if>
+      <if test="mebType != null" >
+        meb_type,
+      </if>
+      <if test="levelTime != null" >
+        level_time,
+      </if>
+      <if test="infoStatus != null" >
+        info_status,
+      </if>
+      <if test="firstLogin != null" >
+        first_login,
+      </if>
+      <if test="invitUserNo != null" >
+        invit_user_no
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="userNo != null" >
+        #{userNo,jdbcType=VARCHAR},
+      </if>      
+      <if test="loginName != null" >
+        #{loginName,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="salt != null" >
+        #{salt,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null" >
+        #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="registerDate != null" >
+        #{registerDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="userType != null" >
+        #{userType,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null" >
+        #{sex,jdbcType=INTEGER},
+      </if>
+      <if test="headImageUrl != null" >
+        #{headImageUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="frontImageUrl != null" >
+        #{frontImageUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="residence != null" >
+        #{residence,jdbcType=VARCHAR},
+      </if>
+      <if test="spaceSignature != null" >
+        #{spaceSignature,jdbcType=VARCHAR},
+      </if>
+      <if test="levelName != null" >
+        #{levelName,jdbcType=VARCHAR},
+      </if>
+      <if test="spaceLevel != null" >
+        #{spaceLevel,jdbcType=VARCHAR},
+      </if>
+      <if test="spaceName != null" >
+        #{spaceName,jdbcType=VARCHAR},
+      </if>
+      <if test="scoreNum != null" >
+        #{scoreNum,jdbcType=INTEGER},
+      </if>
+      <if test="cardType != null" >
+        #{cardType,jdbcType=INTEGER},
+      </if>
+      <if test="cardNo != null" >
+        #{cardNo,jdbcType=VARCHAR},
+      </if>
+      <if test="cardImgPath != null" >
+        #{cardImgPath,jdbcType=VARCHAR},
+      </if>
+      <if test="submitTime != null" >
+        #{submitTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="authTime != null" >
+        #{authTime,jdbcType=DATE},
+      </if>
+      <if test="authStatus != null" >
+        #{authStatus,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="birthday != null" >
+        #{birthday,jdbcType=DATE},
+      </if>
+      <if test="constellation != null" >
+        #{constellation,jdbcType=INTEGER},
+      </if>
+      <if test="bloodType != null" >
+        #{bloodType,jdbcType=INTEGER},
+      </if>
+      <if test="emotionState != null" >
+        #{emotionState,jdbcType=INTEGER},
+      </if>
+      <if test="occupation != null" >
+        #{occupation,jdbcType=VARCHAR},
+      </if>
+      <if test="companyName != null" >
+        #{companyName,jdbcType=VARCHAR},
+      </if>
+      <if test="companyAddress != null" >
+        #{companyAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="companyDetailAddress != null" >
+        #{companyDetailAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="homeTown != null" >
+        #{homeTown,jdbcType=VARCHAR},
+      </if>
+      <if test="validCode != null" >
+        #{validCode,jdbcType=VARCHAR},
+      </if>
+      <if test="mebType != null" >
+        #{mebType,jdbcType=INTEGER},
+      </if>
+      <if test="levelTime != null" >
+        #{levelTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="infoStatus != null" >
+        #{infoStatus,jdbcType=INTEGER},
+      </if>
+      <if test="firstLogin != null" >
+        #{firstLogin,jdbcType=INTEGER},
+      </if>
+      <if test="invitUserNo != null" >
+        #{invitUserNo,jdbcType=VARCHAR}
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByUserNoSelective" parameterType="com.mlx.entity.CmlUser" >
+    update cml_user
+    <set >
+      <if test="loginName != null" >
+        login_name = #{loginName,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        password = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="salt != null" >
+        salt = #{salt,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null" >
+        mobile = #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="registerDate != null" >
+        register_date = #{registerDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="userType != null" >
+        user_type = #{userType,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null" >
+        sex = #{sex,jdbcType=INTEGER},
+      </if>
+      <if test="headImageUrl != null" >
+        head_image_url = #{headImageUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="frontImageUrl != null" >
+        front_image_url = #{frontImageUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="residence != null" >
+        residence = #{residence,jdbcType=VARCHAR},
+      </if>
+      <if test="spaceSignature != null" >
+        space_signature = #{spaceSignature,jdbcType=VARCHAR},
+      </if>
+      <if test="levelName != null" >
+        level_name = #{levelName,jdbcType=VARCHAR},
+      </if>
+      <if test="spaceLevel != null" >
+        space_level = #{spaceLevel,jdbcType=VARCHAR},
+      </if>
+      <if test="spaceName != null" >
+        space_name = #{spaceName,jdbcType=VARCHAR},
+      </if>
+      <if test="scoreNum != null" >
+        score_num = #{scoreNum,jdbcType=INTEGER},
+      </if>
+      <if test="cardType != null" >
+        card_type = #{cardType,jdbcType=INTEGER},
+      </if>
+      <if test="cardNo != null" >
+        card_no = #{cardNo,jdbcType=VARCHAR},
+      </if>
+      <if test="cardImgPath != null" >
+        card_img_path = #{cardImgPath,jdbcType=VARCHAR},
+      </if>
+      <if test="submitTime != null" >
+        submit_time = #{submitTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="authTime != null" >
+        auth_time = #{authTime,jdbcType=DATE},
+      </if>
+      <if test="authStatus != null" >
+        auth_status = #{authStatus,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="birthday != null" >
+        birthday = #{birthday,jdbcType=DATE},
+      </if>
+      <if test="constellation != null" >
+        constellation = #{constellation,jdbcType=INTEGER},
+      </if>
+      <if test="bloodType != null" >
+        blood_type = #{bloodType,jdbcType=INTEGER},
+      </if>
+      <if test="emotionState != null" >
+        emotion_state = #{emotionState,jdbcType=INTEGER},
+      </if>
+      <if test="occupation != null" >
+        occupation = #{occupation,jdbcType=VARCHAR},
+      </if>
+      <if test="companyName != null" >
+        company_name = #{companyName,jdbcType=VARCHAR},
+      </if>
+      <if test="companyAddress != null" >
+        company_address = #{companyAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="companyDetailAddress != null" >
+        company_detail_address = #{companyDetailAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="homeTown != null" >
+        home_town = #{homeTown,jdbcType=VARCHAR},
+      </if>
+      <if test="validCode != null" >
+        valid_code = #{validCode,jdbcType=VARCHAR},
+      </if>
+      <if test="mebType != null" >
+        meb_type = #{mebType,jdbcType=INTEGER},
+      </if>
+      <if test="levelTime != null" >
+        level_time = #{levelTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="infoStatus != null" >
+        info_status = #{infoStatus,jdbcType=INTEGER},
+      </if>
+      <if test="firstLogin != null" >
+        first_login = #{firstLogin,jdbcType=INTEGER},
+      </if>
+    </set>
+    where user_no = #{userNo,jdbcType=VARCHAR}
+  </update>
+  
+    <update id="updateByUserNo" parameterType="com.mlx.entity.CmlUser" >
+    update cml_user
+    <set >
+      <if test="loginName != null" >
+        login_name = #{loginName,jdbcType=VARCHAR},
+      </if>    
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        password = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="salt != null" >
+        salt = #{salt,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="registerDate != null" >
+        register_date = #{registerDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="mobile != null" >
+        mobile = #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="userType != null" >
+        user_type = #{userType,jdbcType=INTEGER},
+      </if>
+      <if test="headImageUrl != null" >
+        head_image_url = #{headImageUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null" >
+        sex = #{sex,jdbcType=INTEGER},
+      </if>
+      <if test="frontImageUrl != null" >
+        front_image_url = #{frontImageUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="residence != null" >
+        residence = #{residence,jdbcType=VARCHAR},
+      </if>
+      <if test="spaceSignature != null" >
+        space_signature = #{spaceSignature,jdbcType=VARCHAR},
+      </if>
+      <if test="levelName != null" >
+        level_name = #{levelName,jdbcType=VARCHAR},
+      </if>
+      <if test="spaceLevel != null" >
+        space_level = #{spaceLevel,jdbcType=VARCHAR},
+      </if>
+      <if test="spaceName != null" >
+        space_name = #{spaceName,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="scoreNum != null" >
+        score_num = #{scoreNum,jdbcType=INTEGER},
+      </if>
+      <if test="cardType != null" >
+        card_type = #{cardType,jdbcType=INTEGER},
+      </if>
+      <if test="cardNo != null" >
+        card_no = #{cardNo,jdbcType=VARCHAR},
+      </if>
+      <if test="cardImgPath != null" >
+        card_img_path = #{cardImgPath,jdbcType=VARCHAR},
+      </if>
+      <if test="submitTime != null" >
+        submit_time = #{submitTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="authTime != null" >
+        auth_time = #{authTime,jdbcType=DATE},
+      </if>
+      <if test="authStatus != null" >
+        auth_status = #{authStatus,jdbcType=INTEGER},
+      </if>
+      <if test="birthday != null" >
+        birthday = #{birthday,jdbcType=DATE},
+      </if>
+      <if test="constellation != null" >
+        constellation = #{constellation,jdbcType=INTEGER},
+      </if>
+      <if test="bloodType != null" >
+        blood_type = #{bloodType,jdbcType=INTEGER},
+      </if>
+      <if test="emotionState != null" >
+        emotion_state = #{emotionState,jdbcType=INTEGER},
+      </if>
+      <if test="occupation != null" >
+        occupation = #{occupation,jdbcType=VARCHAR},
+      </if>
+      <if test="companyName != null" >
+        company_name = #{companyName,jdbcType=VARCHAR},
+      </if>
+      <if test="companyAddress != null" >
+        company_address = #{companyAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="companyDetailAddress != null" >
+        company_detail_address = #{companyDetailAddress,jdbcType=VARCHAR},
+      </if>      
+      <if test="homeTown != null" >
+        home_town = #{homeTown,jdbcType=VARCHAR},
+      </if>
+      <if test="validCode != null" >
+        valid_code = #{validCode,jdbcType=VARCHAR},
+      </if>            
+      <if test="infoStatus != null" >
+        info_status = #{infoStatus,jdbcType=INTEGER},
+      </if>              
+      <if test="firstLogin != null" >
+        first_login = #{firstLogin,jdbcType=INTEGER},
+      </if>              
+    </set>
+    where user_no = #{userNo,jdbcType=VARCHAR}
+  </update>
+  
+ <update id="updateByMobile" parameterType="com.mlx.entity.CmlUser" >
+    update cml_user
+    <set >
+      <if test="loginName != null" >
+        login_name = #{loginName,jdbcType=VARCHAR},
+      </if>    
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        password = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="salt != null" >
+        salt = #{salt,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="registerDate != null" >
+        register_date = #{registerDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="mobile != null" >
+        mobile = #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="userType != null" >
+        user_type = #{userType,jdbcType=INTEGER},
+      </if>
+      <if test="headImageUrl != null" >
+        head_image_url = #{headImageUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null" >
+        sex = #{sex,jdbcType=INTEGER},
+      </if>
+      <if test="frontImageUrl != null" >
+        front_image_url = #{frontImageUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="residence != null" >
+        residence = #{residence,jdbcType=VARCHAR},
+      </if>
+      <if test="spaceSignature != null" >
+        space_signature = #{spaceSignature,jdbcType=VARCHAR},
+      </if>
+      <if test="levelName != null" >
+        level_name = #{levelName,jdbcType=VARCHAR},
+      </if>
+      <if test="spaceLevel != null" >
+        space_level = #{spaceLevel,jdbcType=VARCHAR},
+      </if>
+      <if test="spaceName != null" >
+        space_name = #{spaceName,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="scoreNum != null" >
+        score_num = #{scoreNum,jdbcType=INTEGER},
+      </if>
+      <if test="cardType != null" >
+        card_type = #{cardType,jdbcType=INTEGER},
+      </if>
+      <if test="cardNo != null" >
+        card_no = #{cardNo,jdbcType=VARCHAR},
+      </if>
+      <if test="cardImgPath != null" >
+        card_img_path = #{cardImgPath,jdbcType=VARCHAR},
+      </if>
+      <if test="submitTime != null" >
+        submit_time = #{submitTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="authTime != null" >
+        auth_time = #{authTime,jdbcType=DATE},
+      </if>
+      <if test="authStatus != null" >
+        auth_status = #{authStatus,jdbcType=INTEGER},
+      </if>
+      <if test="birthday != null" >
+        birthday = #{birthday,jdbcType=DATE},
+      </if>
+      <if test="constellation != null" >
+        constellation = #{constellation,jdbcType=INTEGER},
+      </if>
+      <if test="bloodType != null" >
+        blood_type = #{bloodType,jdbcType=INTEGER},
+      </if>
+      <if test="emotionState != null" >
+        emotion_state = #{emotionState,jdbcType=INTEGER},
+      </if>
+      <if test="occupation != null" >
+        occupation = #{occupation,jdbcType=VARCHAR},
+      </if>
+      <if test="companyName != null" >
+        company_name = #{companyName,jdbcType=VARCHAR},
+      </if>
+      <if test="companyAddress != null" >
+        company_address = #{companyAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="companyDetailAddress != null" >
+        company_detail_address = #{companyDetailAddress,jdbcType=VARCHAR},
+      </if>      
+      <if test="homeTown != null" >
+        home_town = #{homeTown,jdbcType=VARCHAR},
+      </if>
+      <if test="validCode != null" >
+        valid_code = #{validCode,jdbcType=VARCHAR},
+      </if>            
+      <if test="infoStatus != null" >
+        info_status = #{infoStatus,jdbcType=INTEGER},
+      </if>              
+      <if test="firstLogin != null" >
+        first_login = #{firstLogin,jdbcType=INTEGER},
+      </if>              
+    </set>
+    where mobile = #{mobile,jdbcType=VARCHAR}
+  </update>
+  
+  <!-- copy start -->
+
+	<!-- 查询用户,演示: 1.输入用map传入多个参数 2.<where>语句, 智能添加where和and关键字 3.输出直接映射对象 -->
+	<select id="search" parameterType="map" resultType="CmlUser" >
+		select id, name, email, password,
+		login_name as loginName, user_no as userNo,open_id as openId,salt, status, mobile, user_type as userType,
+		head_image_url as headImageUrl,front_image_url as frontImageUrl,sex, residence, space_signature as spaceSignature, level_name as levelName, 
+    	space_level as spaceLevel, birthday, constellation, blood_type as bloodType, emotion_state as emotionState, occupation,  
+    company_name as companyName, company_address as companyAddress, company_detail_address as companyDetailAddress,home_town as homeTown,meb_type as mebType, level_time as levelTime,info_status as infoStatus,first_login as firstLogin,invit_user_no as invitUserNo
+		from cml_user 
+		<where>
+			<if test="loginName != null">
+				login_name=#{loginName} and status=1
+			</if>
+			<if test="name != null">
+				and name=#{name} and status=1
+			</if>
+			<if test="email != null">
+				and email=#{email} and status=1
+			</if>
+			<if test="mobile != null">
+				and mobile=#{mobile} and status=1
+			</if>
+			<if test="mebType != null">
+				and meb_type=#{mebType} and status=1
+			</if>
+			<if test="validCode != null" >
+			    and valid_code = #{validCode,jdbcType=VARCHAR}
+			</if>	
+		</where>
+	</select>
+
+	
+	
+	<!-- 注册用户： 1.由数据库生成id并赋值到user对象 -->
+	<insert id="register" parameterType="CmlUser" useGeneratedKeys="true" keyProperty="id">
+		replace into cml_user (
+			login_name, name, user_no,open_id,password, email,salt,status, register_date, mobile,
+			user_type, head_image_url,sex,front_image_url, residence, space_signature, 
+			level_name, space_level,valid_code,info_status,invit_user_no 
+		)
+		values (
+			#{loginName}, #{name}, #{userNo},#{openId},#{password}, #{email},#{salt},#{status},
+			#{registerDate},#{mobile},#{userType,jdbcType=INTEGER}, 
+			#{headImageUrl,jdbcType=VARCHAR},#{sex},#{frontImageUrl,jdbcType=VARCHAR},
+			#{residence,jdbcType=VARCHAR}, #{spaceSignature,jdbcType=VARCHAR}, 
+			#{levelName,jdbcType=VARCHAR}, #{spaceLevel,jdbcType=VARCHAR},
+			#{validCode,jdbcType=VARCHAR}, #{infoStatus,jdbcType=INTEGER} ,
+			#{invitUserNo,jdbcType=VARCHAR})
+	</insert>
+
+	<update id="updateStatusByEmail" parameterType="com.mlx.entity.CmlUser" >
+    update cml_user
+    set status = 1
+    where email = #{email,jdbcType=VARCHAR}
+    <if test="validCode != null" >
+       and valid_code = #{validCode,jdbcType=VARCHAR}
+    </if>
+  </update>
+  
+   <update id="updateHeadImage" parameterType="com.mlx.entity.CmlUser" >
+    update cml_user
+    set head_image_url = #{headImageUrl,jdbcType=VARCHAR}
+    where user_no = #{userNo,jdbcType=VARCHAR}
+  </update>
+   <update id="updateFrontImageUrl" parameterType="com.mlx.entity.CmlUser" >
+    update cml_user
+    set front_image_url = #{frontImageUrl,jdbcType=VARCHAR}
+    where user_no = #{userNo,jdbcType=VARCHAR}
+  </update>
+   <update id="updateEmail" parameterType="com.mlx.entity.CmlUser" >
+    update cml_user
+    set email = #{email,jdbcType=VARCHAR}
+    where user_no = #{userNo,jdbcType=VARCHAR}
+  </update>
+  <update id="updateMobile" parameterType="com.mlx.entity.CmlUser" >
+    update cml_user
+    set  mobile = #{mobile,jdbcType=VARCHAR}
+    where user_no = #{userNo,jdbcType=VARCHAR}
+  </update>
+  <update id="updatePassword" parameterType="com.mlx.entity.CmlUser" >
+    update cml_user
+    set password = #{password,jdbcType=VARCHAR},salt = #{salt,jdbcType=VARCHAR}
+    where user_no = #{userNo,jdbcType=VARCHAR}
+  </update>
+  <update id="updateMebTypeByUser" parameterType="com.mlx.entity.CmlUser" >
+    update cml_user
+    set meb_type = #{mebType,jdbcType=VARCHAR},level_time = #{levelTime,jdbcType=TIMESTAMP}
+    where user_no = #{userNo,jdbcType=VARCHAR}
+  </update>
+  
+   <select id="selectByPage" parameterType="com.mlx.entity.CmlUser" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from cml_user
+		<where>
+			<if test="loginName != null">
+				login_name=#{loginName,jdbcType=VARCHAR} 
+			</if>
+			<if test="name != null">
+				and name like "%"#{name}"%" 
+			</if>
+			<if test="email != null">
+				and email=#{email,jdbcType=VARCHAR} 
+			</if>
+			<if test="mobile != null">
+				and mobile=#{mobile,jdbcType=VARCHAR}
+			</if>
+			<if test="status != null">
+			    and status = #{status,jdbcType=INTEGER}
+			</if>
+			<if test="userNo != null">
+			    and user_no = #{userNo,jdbcType=VARCHAR}
+			</if>	
+		</where>		
+	</select>
+	
+	<select id="verificationEmail" parameterType="String" resultType="CmlUser">
+		select id, name, email, mobile,user_type as userType,
+		user_no as userNo,
+		login_name as loginName
+		from cml_user
+		where email=#{email}
+	</select>
+	
+	<select id="verificationMobile" parameterType="String" resultType="com.mlx.entity.CmlUser">
+		select id, name, email, mobile,user_type as userType,
+		user_no as userNo,
+		login_name as loginName
+		from cml_user
+		where mobile=#{mobile}
+	</select>
+	
+	<select id="selectCmlUserByMobile" parameterType="String" resultType="com.mlx.entity.CmlUser">
+		select <include refid="Base_Column_List" />
+		from cml_user
+		where mobile=#{mobile}
+	</select>
+	<select id="findStutusByEmail" parameterType="map" resultMap="BaseResultMap">
+		select 
+		<include refid="Base_Column_List" />
+		from cml_user
+		<where>
+		<if test="status != null">
+		 status = #{status,jdbcType=INTEGER}
+		</if>
+		<if test="email != null">
+		 and email = #{email}
+		</if>
+		<if test="validCode != null" >
+		 and valid_code = #{validCode,jdbcType=VARCHAR}
+		</if>		
+		</where>	
+	</select>
+	
+	<select id="findAllCard" parameterType="map" resultMap="BaseResultMap">
+		select 
+		<include refid="Base_Column_List" />
+		from cml_user
+		where card_no is not null and status=1
+	</select>
+	
+	<update id="updateAuthStatus" parameterType="com.mlx.entity.CmlUser" >
+    update cml_user
+    set
+      auth_time = #{authTime,jdbcType=DATE},
+      auth_status = #{authStatus,jdbcType=INTEGER}
+    where user_no = #{userNo,jdbcType=VARCHAR}
+  </update>	
+  
+  <update id="addCard" parameterType="com.mlx.entity.CmlUser" >
+    update cml_user
+    set
+      card_type = #{cardType,jdbcType=INTEGER},
+      card_no = #{cardNo,jdbcType=VARCHAR},
+      card_img_path = #{cardImgPath,jdbcType=VARCHAR},
+      submit_time = #{submitTime,jdbcType=TIMESTAMP},
+      auth_status = #{authStatus,jdbcType=INTEGER}
+    where user_no = #{userNo,jdbcType=VARCHAR}
+  </update>	
+  
+  <select id="getUserByUserNo" parameterType="String" resultMap="BaseResultMap">
+		select
+		<include refid="userinfo_Column_List" />
+		from cml_user
+		where user_no=#{userNo,jdbcType=VARCHAR}
+  </select>
+  
+  <!-- copy end -->
+  
+  <update id="updateFirstLoginFlag" parameterType="com.mlx.entity.CmlUser">
+  	update cml_user
+  	set first_login=#{firstLogin,jdbcType=INTEGER}
+  	where user_no=#{userNo,jdbcType=VARCHAR}
+  </update>
+  
+  <select id="findMemberByFirstLogin" resultMap="BaseResultMap">
+ 	 select
+		<include refid="Base_Column_List" />
+	 from cml_user 
+	 where first_login=1
+  </select>
+  
+   <select id="selectByPageForSendEmailMutil" parameterType="com.mlx.entity.CmlUser" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from cml_user
+		<where>
+			<if test="loginName != null">
+				login_name=#{loginName,jdbcType=VARCHAR} 
+			</if>
+			<if test="name != null">
+				and name like "%"#{name}"%" 
+			</if>
+			<if test="email != null">
+				and email=#{email,jdbcType=VARCHAR} 
+			</if>
+			<if test="userNo != null">
+			    and user_no = #{userNo,jdbcType=VARCHAR}
+			</if>
+			<if test="mobile != null">
+				and mobile=#{mobile,jdbcType=VARCHAR}
+			</if>
+			 and status=1
+		</where>		
+	</select>
+	
+	<select id="getInvitFriendNum" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select count(id) as num
+		from cml_user
+		where invit_user_no=#{userNo,jdbcType=VARCHAR}
+	</select>
+  
+  <select id="getInvitFriendList" parameterType="map" resultMap="BaseResultMap">
+  	select
+  	<include refid="Base_Column_List"/>
+  	from cml_user
+  	where invit_user_no=#{userNo,jdbcType=VARCHAR}
+  	<if test="year!=null">and YEAR(register_date)=#{year,jdbcType=VARCHAR}</if>
+  	<if test="month!=null">and MONTH(register_date)=#{month,jdbcType=VARCHAR}</if>
+  	<if test="day!=null">and DAYOFMONTH(register_date)=#{day,jdbcType=VARCHAR}</if>
+  	order by id desc
+  </select>
+  
+</mapper>
