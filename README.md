@@ -19,6 +19,20 @@
 
 * dubbox的管理web程序 链接：[http://share.weiyun.com/272145ef0f9e8a7c44d9c12ebf09a4ff](http://share.weiyun.com/272145ef0f9e8a7c44d9c12ebf09a4ff) 密码：Iegc
 
+##相关运行截图
+http://share.weiyun.com/0c34594f4ba01a005b72a0349f2bb995
+
+http://share.weiyun.com/10ce0fba7a2cb168fe40ebea42ad7a8d
+<br/>
+服务调用<br/>
+http://share.weiyun.com/f0d126af0477d7d876b58a2bcb418760
+<br/>
+消费者调用<br/>
+http://share.weiyun.com/b777973d6fdc1cf3a7aef4c7d3a2860d
+<br/>
+Zookeeper配置<br/>
+http://share.weiyun.com/ed3f629bc9c67779603043558592d960
+
 ##关于我
 ```javascript
   var me = {
